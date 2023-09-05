@@ -1,0 +1,133 @@
+---
+title: "Actividad 6"
+author: "Andre Ramírez"
+date: "2023-08-29"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r}
+rm(list = ls())
+```
+
+```{r}
+library("dplyr")
+library("tidyverse")
+library("visdat")
+library("Hmisc")
+library("stringr")
+```
+
+```{r}
+library(readr)
+df <- read_csv("DF_Mexico.csv")
+View(df)
+```
+
+```{r}
+df_sel <- df %>%
+  select(c("host_acceptance_rate", "host_identity_verified", "property_type", "host_response_time", "number_of_reviews", "review_scores_cleanliness", "availability_365", "review_scores_location", "review_scores_value","bathrooms_text","price"))
+
+```
+
+```{r}
+vis_miss(df_sel)
+```
+
+```{r}
+colSums(is.na(df_sel))
+missing_perc <- round(sum(is.na(df_sel$bathrooms)) / nrow(df_sel) * 100,2)
+print(paste("Percentage of missing values in 'bathrooms':", missing_perc, "%"))
+missing_perc2 <- round(sum(is.na(df_sel$review_scores_location)) / nrow(df_sel) * 100,2)
+print(paste("Percentage of missing values in 'review_scores_location':", missing_perc2, "%"))
+missing_perc3 <- round(sum(is.na(df_sel$review_scores_cleanliness)) / nrow(df_sel) * 100,2)
+print(paste("Percentage of missing values in 'review_scores_cleanliness':", missing_perc3, "%"))
+missing_perc4 <- round(sum(is.na(df_sel$review_scores_value)) / nrow(df_sel) * 100,2)
+print(paste("Percentage of missing values in 'review_scores_value':", missing_perc4, "%"))
+
+```
+
+Considerando que tenemos que hacer un analisís de la variable ["bathrooms"] entonces seran transformados los NA's a 0 en vez de eliminar la variable, que aunque ya sabemos el resultado del analisis es necesario dejarlo marcado para que se entienda mejor
+
+```{r}
+
+df_sel$bathrooms_text <- as.numeric(gsub(" baths", "", df_sel$bathrooms_text))
+
+```
+
+```{r}
+df_sel$bathrooms_text[is.na(df_sel$bathrooms_text)] <- 1
+```
+
+```{r}
+View(df_sel)
+```
+
+```{r}
+
+df_sel$review_scores_location <- with(df_sel, impute(review_scores_location, mean))
+
+```
+
+
+```{r}
+df_sel$review_scores_location <- round(df_sel$review_scores_location, 2)
+```
+
+```{r}
+df_sel$review_scores_cleanliness <- with(df_sel, impute(review_scores_cleanliness, mean))
+```
+
+
+
+```{r}
+df_sel$review_scores_cleanliness <- round(df_sel$review_scores_cleanliness, 2)
+
+```
+
+```{r}
+df_sel$review_scores_value <- with(df_sel, impute(review_scores_value, mean))
+
+```
+
+
+```{r}
+df_sel$review_scores_value <- round(df_sel$review_scores_value, 2)
+
+```
+
+```{r}
+colSums(is.na(df_sel))
+missing_perc <- round(sum(is.na(df_sel$bathrooms)) / nrow(df_sel) * 100,2)
+print(paste("Percentage of missing values in 'bathrooms':", missing_perc, "%"))
+missing_perc2 <- round(sum(is.na(df_sel$review_scores_location)) / nrow(df_sel) * 100,2)
+print(paste("Percentage of missing values in 'review_scores_location':", missing_perc2, "%"))
+missing_perc3 <- round(sum(is.na(df_sel$review_scores_cleanliness)) / nrow(df_sel) * 100,2)
+print(paste("Percentage of missing values in 'review_scores_cleanliness':", missing_perc3, "%"))
+missing_perc4 <- round(sum(is.na(df_sel$review_scores_value)) / nrow(df_sel) * 100,2)
+print(paste("Percentage of missing values in 'review_scores_value':", missing_perc4, "%"))
+```
+
+```{r}
+glimpse(df_sel)
+```
+  
+```{r}
+write.csv(df_sel, "DF_LIMPIO(No outliers).csv")
+```
+
+
+
+
+
+  
+
+  
+
+  
+  
